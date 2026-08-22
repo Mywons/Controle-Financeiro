@@ -1,5 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing } from '../theme';
+import { AnimatedPressable } from './AnimatedPressable';
 
 interface MonthSwitcherProps {
   label: string;
@@ -12,15 +14,34 @@ export function MonthSwitcher({ label, onPrev, onNext, dark = false }: MonthSwit
   const textColor = dark ? colors.textOnDark : colors.text;
   const btnBg = dark ? 'rgba(255,255,255,0.12)' : colors.primarySoft;
   const arrowColor = dark ? colors.textOnDark : colors.primary;
+
+  const fade = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    fade.setValue(0);
+    Animated.timing(fade, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+  }, [label, fade]);
+
   return (
     <View style={styles.row}>
-      <Pressable style={[styles.btn, { backgroundColor: btnBg }]} onPress={onPrev} hitSlop={10}>
+      <AnimatedPressable
+        style={[styles.btn, { backgroundColor: btnBg }]}
+        onPress={onPrev}
+        hitSlop={10}
+        scaleTo={0.85}
+      >
         <Text style={[styles.arrow, { color: arrowColor }]}>‹</Text>
-      </Pressable>
-      <Text style={[styles.label, { color: textColor }]}>{label}</Text>
-      <Pressable style={[styles.btn, { backgroundColor: btnBg }]} onPress={onNext} hitSlop={10}>
+      </AnimatedPressable>
+      <Animated.Text style={[styles.label, { color: textColor, opacity: fade }]}>
+        {label}
+      </Animated.Text>
+      <AnimatedPressable
+        style={[styles.btn, { backgroundColor: btnBg }]}
+        onPress={onNext}
+        hitSlop={10}
+        scaleTo={0.85}
+      >
         <Text style={[styles.arrow, { color: arrowColor }]}>›</Text>
-      </Pressable>
+      </AnimatedPressable>
     </View>
   );
 }

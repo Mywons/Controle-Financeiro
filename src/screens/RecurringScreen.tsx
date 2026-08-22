@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { Fab } from '../components/Fab';
 import { RecurringFormModal } from '../components/RecurringFormModal';
 import { RecurringRow } from '../components/RecurringRow';
 import { useFinanceStore } from '../store/useFinanceStore';
@@ -117,9 +118,7 @@ export function RecurringScreen() {
         <View style={{ height: spacing.xxl }} />
       </ScrollView>
 
-      <Pressable style={styles.fab} onPress={openNew}>
-        <Text style={styles.fabText}>+</Text>
-      </Pressable>
+      <Fab onPress={openNew} />
 
       <RecurringFormModal
         visible={modalVisible}
@@ -183,27 +182,5 @@ const styles = StyleSheet.create({
   },
   emptyWrap: {
     paddingVertical: spacing.sm,
-  },
-  fab: {
-    position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.lg,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  fabText: {
-    color: colors.white,
-    fontSize: 28,
-    fontWeight: '400',
-    marginTop: -2,
   },
 });

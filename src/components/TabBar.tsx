@@ -1,5 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing } from '../theme';
+import { AnimatedPressable } from './AnimatedPressable';
 
 export type TabKey = 'dashboard' | 'transactions' | 'recurring';
 
@@ -17,23 +19,52 @@ const TABS: { key: TabKey; label: string; icon: string }[] = [
 export function TabBar({ active, onChange }: TabBarProps) {
   return (
     <View style={styles.container}>
-      {TABS.map((tab) => {
-        const isActive = tab.key === active;
-        return (
-          <Pressable
-            key={tab.key}
-            style={styles.tab}
-            onPress={() => onChange(tab.key)}
-            hitSlop={8}
-          >
-            <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
-              <Text style={styles.icon}>{tab.icon}</Text>
-            </View>
-            <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
-          </Pressable>
-        );
-      })}
+      {TABS.map((tab) => (
+        <TabItem
+          key={tab.key}
+          label={tab.label}
+          icon={tab.icon}
+          isActive={tab.key === active}
+          onPress={() => onChange(tab.key)}
+        />
+      ))}
     </View>
+  );
+}
+
+function TabItem({
+  label,
+  icon,
+  isActive,
+  onPress,
+}: {
+  label: string;
+  icon: string;
+  isActive: boolean;
+  onPress: () => void;
+}) {
+  const bounce = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.spring(bounce, {
+      toValue: isActive ? 1 : 0,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 10,
+    }).start();
+  }, [isActive, bounce]);
+
+  const scale = bounce.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] });
+
+  return (
+    <AnimatedPressable style={styles.tab} onPress={onPress} hitSlop={8}>
+      <Animated.View
+        style={[styles.iconWrap, isActive && styles.iconWrapActive, { transform: [{ scale }] }]}
+      >
+        <Text style={styles.icon}>{icon}</Text>
+      </Animated.View>
+      <Text style={[styles.label, isActive && styles.labelActive]}>{label}</Text>
+    </AnimatedPressable>
   );
 }
 

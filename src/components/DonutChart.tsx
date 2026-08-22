@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import { colors } from '../theme';
 
@@ -26,8 +27,25 @@ export function DonutChart({
 
   let cumulative = 0;
 
+  const entrance = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.spring(entrance, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 10,
+      bounciness: 8,
+    }).start();
+  }, [entrance]);
+
   return (
-    <View style={{ width: size, height: size }}>
+    <Animated.View
+      style={{
+        width: size,
+        height: size,
+        opacity: entrance,
+        transform: [{ scale: entrance.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] }) }],
+      }}
+    >
       <Svg width={size} height={size}>
         <G rotation={-90} origin={`${size / 2}, ${size / 2}`}>
           <Circle
@@ -63,7 +81,7 @@ export function DonutChart({
         </G>
       </Svg>
       {centerLabel ? <View style={styles.center}>{centerLabel}</View> : null}
-    </View>
+    </Animated.View>
   );
 }
 

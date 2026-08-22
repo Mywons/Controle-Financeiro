@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { colors, radius, spacing } from '../theme';
+import { AnimatedPressable } from './AnimatedPressable';
 
 interface ButtonProps {
   label: string;
@@ -9,21 +10,21 @@ interface ButtonProps {
 
 export function PrimaryButton({ label, onPress, disabled }: ButtonProps) {
   return (
-    <Pressable
+    <AnimatedPressable
       style={[styles.primary, disabled && styles.disabled]}
       onPress={onPress}
       disabled={disabled}
     >
       <Text style={styles.primaryText}>{label}</Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 export function DangerButton({ label, onPress }: ButtonProps) {
   return (
-    <Pressable style={styles.danger} onPress={onPress}>
+    <AnimatedPressable style={styles.danger} onPress={onPress}>
       <Text style={styles.dangerText}>{label}</Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

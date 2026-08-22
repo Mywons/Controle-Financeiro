@@ -1,6 +1,7 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Category } from '../types';
 import { colors, radius, spacing } from '../theme';
+import { AnimatedPressable } from './AnimatedPressable';
 
 interface CategoryPickerProps {
   categories: Category[];
@@ -15,8 +16,9 @@ export function CategoryPicker({ categories, selectedId, onSelect }: CategoryPic
         {categories.map((cat) => {
           const isSelected = cat.id === selectedId;
           return (
-            <Pressable
+            <AnimatedPressable
               key={cat.id}
+              scaleTo={0.9}
               style={[
                 styles.chip,
                 {
@@ -30,7 +32,7 @@ export function CategoryPicker({ categories, selectedId, onSelect }: CategoryPic
               <Text style={[styles.label, { color: isSelected ? colors.white : colors.text }]}>
                 {cat.name}
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           );
         })}
       </View>

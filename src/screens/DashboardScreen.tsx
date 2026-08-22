@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef } from 'react';
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Card } from '../components/Card';
 import { DonutChart } from '../components/DonutChart';
 import { MonthSwitcher } from '../components/MonthSwitcher';
@@ -42,6 +42,17 @@ export function DashboardScreen() {
     color: c.category?.color ?? colors.textMuted,
   }));
 
+  const balancePop = useRef(new Animated.Value(0.9)).current;
+  useEffect(() => {
+    balancePop.setValue(0.9);
+    Animated.spring(balancePop, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 16,
+      bounciness: 10,
+    }).start();
+  }, [selectedMonth, balancePop]);
+
   return (
     <ScrollView
       style={styles.container}
@@ -60,7 +71,9 @@ export function DashboardScreen() {
         />
 
         <Text style={styles.heroBalanceLabel}>Saldo previsto do mês</Text>
-        <Text style={styles.heroBalance}>{formatCurrency(summary.balanceProjected)}</Text>
+        <Animated.Text style={[styles.heroBalance, { transform: [{ scale: balancePop }] }]}>
+          {formatCurrency(summary.balanceProjected)}
+        </Animated.Text>
 
         <View style={styles.heroStatsRow}>
           <View style={styles.heroStat}>
@@ -126,6 +139,7 @@ export function DashboardScreen() {
         ) : (
           <View style={styles.chartRow}>
             <DonutChart
+              key={selectedMonth}
               segments={donutSegments}
               size={140}
               strokeWidth={18}

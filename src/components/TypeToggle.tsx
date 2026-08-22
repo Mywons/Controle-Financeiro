@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { TransactionType } from '../types';
 import { colors, radius, spacing } from '../theme';
+import { AnimatedPressable } from './AnimatedPressable';
 
 interface TypeToggleProps {
   value: TransactionType;
@@ -17,21 +19,65 @@ export function TypeToggle({
 }: TypeToggleProps) {
   return (
     <View style={styles.container}>
-      <Pressable
-        style={[styles.option, value === 'expense' && styles.expenseActive]}
+      <TypeOption
+        label={expenseLabel}
+        isActive={value === 'expense'}
+        activeColor={colors.expense}
         onPress={() => onChange('expense')}
-      >
-        <Text style={[styles.text, value === 'expense' && styles.textActive]}>
-          {expenseLabel}
-        </Text>
-      </Pressable>
-      <Pressable
-        style={[styles.option, value === 'income' && styles.incomeActive]}
+      />
+      <TypeOption
+        label={incomeLabel}
+        isActive={value === 'income'}
+        activeColor={colors.income}
         onPress={() => onChange('income')}
-      >
-        <Text style={[styles.text, value === 'income' && styles.textActive]}>{incomeLabel}</Text>
-      </Pressable>
+      />
     </View>
+  );
+}
+
+function TypeOption({
+  label,
+  isActive,
+  activeColor,
+  onPress,
+}: {
+  label: string;
+  isActive: boolean;
+  activeColor: string;
+  onPress: () => void;
+}) {
+  const anim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, {
+      toValue: isActive ? 1 : 0,
+      duration: 180,
+      useNativeDriver: false,
+    }).start();
+  }, [isActive, anim]);
+
+  return (
+    <AnimatedPressable style={styles.option} onPress={onPress}>
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          { borderRadius: radius.pill, backgroundColor: activeColor, opacity: anim },
+        ]}
+      />
+      <Animated.Text
+        style={[
+          styles.text,
+          {
+            color: anim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [colors.textMuted, colors.white],
+            }),
+          },
+        ]}
+      >
+        {label}
+      </Animated.Text>
+    </AnimatedPressable>
   );
 }
 
@@ -48,19 +94,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm + 2,
     borderRadius: radius.pill,
     alignItems: 'center',
-  },
-  expenseActive: {
-    backgroundColor: colors.expense,
-  },
-  incomeActive: {
-    backgroundColor: colors.income,
+    overflow: 'hidden',
   },
   text: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.textMuted,
-  },
-  textActive: {
-    color: colors.white,
   },
 });

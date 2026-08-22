@@ -1,5 +1,6 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing } from '../theme';
+import { AnimatedPressable } from './AnimatedPressable';
 
 interface DayPickerProps {
   value: number;
@@ -15,13 +16,14 @@ export function DayPicker({ value, onChange, maxDay = 28 }: DayPickerProps) {
         {days.map((day) => {
           const isSelected = day === value;
           return (
-            <Pressable
+            <AnimatedPressable
               key={day}
+              scaleTo={0.85}
               style={[styles.chip, isSelected && styles.chipActive]}
               onPress={() => onChange(day)}
             >
               <Text style={[styles.text, isSelected && styles.textActive]}>{day}</Text>
-            </Pressable>
+            </AnimatedPressable>
           );
         })}
       </View>

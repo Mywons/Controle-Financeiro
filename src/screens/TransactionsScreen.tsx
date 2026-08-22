@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { AnimatedPressable } from '../components/AnimatedPressable';
 import { Card } from '../components/Card';
 import { EmptyState } from '../components/EmptyState';
+import { Fab } from '../components/Fab';
 import { MonthSwitcher } from '../components/MonthSwitcher';
 import { TransactionFormModal } from '../components/TransactionFormModal';
 import { TransactionRow } from '../components/TransactionRow';
@@ -75,8 +77,9 @@ export function TransactionsScreen() {
               { key: 'income', label: 'Receitas' },
             ] as { key: Filter; label: string }[]
           ).map((f) => (
-            <Pressable
+            <AnimatedPressable
               key={f.key}
+              scaleTo={0.92}
               style={[styles.filterChip, filter === f.key && styles.filterChipActive]}
               onPress={() => setFilter(f.key)}
             >
@@ -85,7 +88,7 @@ export function TransactionsScreen() {
               >
                 {f.label}
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           ))}
         </View>
       </View>
@@ -116,9 +119,7 @@ export function TransactionsScreen() {
         )}
       />
 
-      <Pressable style={styles.fab} onPress={openNew}>
-        <Text style={styles.fabText}>+</Text>
-      </Pressable>
+      <Fab onPress={openNew} />
 
       <TransactionFormModal
         visible={modalVisible}
@@ -184,27 +185,5 @@ const styles = StyleSheet.create({
   },
   rowInner: {
     paddingHorizontal: spacing.xs,
-  },
-  fab: {
-    position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.lg,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  fabText: {
-    color: colors.white,
-    fontSize: 28,
-    fontWeight: '400',
-    marginTop: -2,
   },
 });

@@ -1,8 +1,10 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { Category, Transaction } from '../types';
 import { colors, radius, spacing } from '../theme';
 import { formatCurrency } from '../utils/format';
 import { formatDayMonth } from '../utils/date';
+import { AnimatedPressable } from './AnimatedPressable';
 
 interface TransactionRowProps {
   transaction: Transaction;
@@ -21,8 +23,29 @@ export function TransactionRow({
   const amountColor = isIncome ? colors.income : colors.expense;
   const sign = isIncome ? '+' : '-';
 
+  const paidAnim = useRef(new Animated.Value(transaction.paid ? 1 : 0)).current;
+  const dotScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(paidAnim, {
+      toValue: transaction.paid ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+    Animated.sequence([
+      Animated.spring(dotScale, { toValue: 1.6, useNativeDriver: true, speed: 40 }),
+      Animated.spring(dotScale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 10 }),
+    ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transaction.paid]);
+
+  const statusColor = paidAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.pending, colors.income],
+  });
+
   return (
-    <Pressable style={styles.row} onPress={onPress}>
+    <AnimatedPressable style={styles.row} onPress={onPress} scaleTo={0.98}>
       <View
         style={[
           styles.iconCircle,
@@ -43,26 +66,16 @@ export function TransactionRow({
         <Text style={[styles.amount, { color: amountColor }]}>
           {sign} {formatCurrency(Math.abs(transaction.amount))}
         </Text>
-        <Pressable onPress={onTogglePaid} hitSlop={8} style={styles.statusBtn}>
-          <View
-            style={[
-              styles.statusDot,
-              {
-                backgroundColor: transaction.paid ? colors.income : colors.pending,
-              },
-            ]}
+        <AnimatedPressable onPress={onTogglePaid} hitSlop={8} style={styles.statusBtn} scaleTo={0.85}>
+          <Animated.View
+            style={[styles.statusDot, { backgroundColor: statusColor, transform: [{ scale: dotScale }] }]}
           />
-          <Text
-            style={[
-              styles.statusText,
-              { color: transaction.paid ? colors.income : colors.pending },
-            ]}
-          >
+          <Animated.Text style={[styles.statusText, { color: statusColor }]}>
             {transaction.paid ? (isIncome ? 'Recebido' : 'Pago') : 'Pendente'}
-          </Text>
-        </Pressable>
+          </Animated.Text>
+        </AnimatedPressable>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
