@@ -4,15 +4,15 @@ import { colors, radius, spacing } from '../theme';
 interface DayPickerProps {
   value: number;
   onChange: (day: number) => void;
+  maxDay?: number;
 }
 
-const DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
-
-export function DayPicker({ value, onChange }: DayPickerProps) {
+export function DayPicker({ value, onChange, maxDay = 28 }: DayPickerProps) {
+  const days = Array.from({ length: maxDay }, (_, i) => i + 1);
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
       <View style={styles.row}>
-        {DAYS.map((day) => {
+        {days.map((day) => {
           const isSelected = day === value;
           return (
             <Pressable

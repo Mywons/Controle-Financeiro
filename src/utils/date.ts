@@ -34,6 +34,15 @@ export function dateForDayInMonth(monthKey: string, day: number): string {
   return `${iso}-${String(safeDay).padStart(2, '0')}`;
 }
 
+export function daysInMonth(monthKey: string): number {
+  const base = parse(monthKey, 'yyyy-MM', new Date());
+  return getDaysInMonth(base);
+}
+
+export function dayOfMonth(isoDate: string): number {
+  return parseInt(isoDate.slice(8, 10), 10);
+}
+
 export function formatDayMonth(isoDate: string): string {
   const d = parse(isoDate, 'yyyy-MM-dd', new Date());
   return format(d, "dd 'de' MMM", { locale: ptBR });

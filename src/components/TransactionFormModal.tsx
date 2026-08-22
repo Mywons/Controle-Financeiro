@@ -4,10 +4,11 @@ import { confirmDestructive, notify } from '../utils/alert';
 import { Transaction, TransactionType } from '../types';
 import { CategoryPicker } from './CategoryPicker';
 import { DangerButton, PrimaryButton } from './Buttons';
+import { DayPicker } from './DayPicker';
 import { FormField, StyledInput } from './FormField';
 import { FormModal } from './FormModal';
 import { TypeToggle } from './TypeToggle';
-import { todayIso } from '../utils/date';
+import { dateForDayInMonth, dayOfMonth, daysInMonth, monthLabel, todayIso } from '../utils/date';
 
 interface TransactionFormModalProps {
   visible: boolean;
@@ -32,6 +33,7 @@ export function TransactionFormModal({
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [date, setDate] = useState(defaultDate);
+  const [monthKey, setMonthKey] = useState(defaultDate.slice(0, 7));
   const [paid, setPaid] = useState(false);
 
   const filteredCategories = useMemo(
@@ -47,6 +49,7 @@ export function TransactionFormModal({
       setAmount(String(editingTransaction.amount).replace('.', ','));
       setCategoryId(editingTransaction.categoryId);
       setDate(editingTransaction.date);
+      setMonthKey(editingTransaction.date.slice(0, 7));
       setPaid(editingTransaction.paid);
     } else {
       setType('expense');
@@ -54,6 +57,7 @@ export function TransactionFormModal({
       setAmount('');
       setCategoryId(null);
       setDate(defaultDate);
+      setMonthKey(defaultDate.slice(0, 7));
       setPaid(false);
     }
   }, [visible, editingTransaction, defaultDate]);
@@ -148,8 +152,12 @@ export function TransactionFormModal({
         />
       </FormField>
 
-      <FormField label="Data">
-        <StyledInput value={date} onChangeText={setDate} placeholder="AAAA-MM-DD" />
+      <FormField label={`Dia · ${monthLabel(monthKey)}`}>
+        <DayPicker
+          value={dayOfMonth(date)}
+          maxDay={daysInMonth(monthKey)}
+          onChange={(day) => setDate(dateForDayInMonth(monthKey, day))}
+        />
       </FormField>
 
       <PrimaryButton label="Salvar" onPress={handleSave} />

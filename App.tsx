@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.root} edges={['top']}>
+      <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
         <View style={styles.screen}>
           {tab === 'dashboard' && <DashboardScreen />}
           {tab === 'transactions' && <TransactionsScreen />}
